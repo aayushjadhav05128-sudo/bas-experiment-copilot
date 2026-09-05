@@ -1,0 +1,15 @@
+{
+  "total_runs": 0,
+  "clean_runs": 0,
+  "total_deviations": 673,
+  "step_flags": {
+    "1": 673
+  },
+  "deviation_types": {
+    "SKIPPED": 1,
+    "OUT_OF_ORDER": 672,
+    "UNEXPECTED": 0,
+    "LOW_CONFIDENCE_HOLD": 0,
+    "PRE_ERROR_NUDGE": 0
+  }
+}

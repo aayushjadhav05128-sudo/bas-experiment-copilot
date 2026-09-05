@@ -1,0 +1,29 @@
+{
+  "video": "skip_step3_run_01.mp4",
+  "segments": [
+    {
+      "step": 1,
+      "action": "open_chamber",
+      "start": 0.0,
+      "end": 3.0
+    },
+    {
+      "step": 2,
+      "action": "insert_cartridge",
+      "start": 3.0,
+      "end": 6.5
+    },
+    {
+      "step": 3,
+      "action": "verify_seal",
+      "start": 6.5,
+      "end": 10.5
+    },
+    {
+      "step": 4,
+      "action": "activate",
+      "start": 10.5,
+      "end": 14.0
+    }
+  ]
+}

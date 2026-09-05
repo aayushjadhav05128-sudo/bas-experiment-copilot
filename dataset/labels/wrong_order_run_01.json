@@ -1,0 +1,29 @@
+{
+  "video": "wrong_order_run_01.mp4",
+  "segments": [
+    {
+      "step": 1,
+      "action": "open_chamber",
+      "start": 0.0,
+      "end": 3.0
+    },
+    {
+      "step": 2,
+      "action": "attach_probe",
+      "start": 3.0,
+      "end": 6.5
+    },
+    {
+      "step": 3,
+      "action": "insert_cartridge",
+      "start": 6.5,
+      "end": 10.0
+    },
+    {
+      "step": 4,
+      "action": "verify_seal",
+      "start": 10.0,
+      "end": 13.5
+    }
+  ]
+}

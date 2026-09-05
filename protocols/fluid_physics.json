@@ -1,0 +1,10 @@
+{
+  "name": "Fluid Physics & Protein Crystallization",
+  "steps": [
+    {"id": 0, "action": "open_chamber",     "label": "Open sample chamber"},
+    {"id": 1, "action": "insert_cartridge", "label": "Insert sample cartridge"},
+    {"id": 2, "action": "attach_probe",     "label": "Attach sensor probe"},
+    {"id": 3, "action": "verify_seal",      "label": "Verify seal integrity"},
+    {"id": 4, "action": "activate",         "label": "Activate agitator"}
+  ]
+}

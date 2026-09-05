@@ -1,0 +1,12 @@
+{
+  "id": "crystallization",
+  "name": "Rapid Macromolecular Crystal Assay",
+  "version": "1.0.0",
+  "description": "Secondary orbital assay protocol for rapid macromolecular screening.",
+  "steps": [
+    { "id": 0, "action": "sanitize_well",   "label": "Sanitize crystallization well", "target_object": "well_plate",     "expected_duration_s": 4 },
+    { "id": 1, "action": "inject_buffer",   "label": "Inject crystallization buffer", "target_object": "buffer_pipette", "expected_duration_s": 6 },
+    { "id": 2, "action": "mount_slide",     "label": "Mount microscopic slide",      "target_object": "micro_slide",    "expected_duration_s": 5 },
+    { "id": 3, "action": "lock_incubator",  "label": "Lock incubation module",        "target_object": "incubator_lock", "expected_duration_s": 4 }
+  ]
+}

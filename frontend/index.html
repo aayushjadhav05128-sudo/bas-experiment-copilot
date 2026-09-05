@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BAS Experiment Copilot — Bharatiya Antariksh Station</title>
+  <meta name="description" content="ISRO Aerospace Payload Operations Copilot for Bharatiya Antariksh Station (BAS). High-reliability deterministic computer vision and protocol safety state engine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+  <!-- ==================== HUD HEADER BAR ==================== -->
+  <header class="hud-header">
+    <div class="header-left">
+      <div class="isro-emblem-badge">
+        <span class="orbit-icon">⬡</span>
+        <div class="title-group">
+          <h1 class="station-title">BHARATIYA ANTARIKSH STATION — PAYLOAD OPERATIONS COPILOT</h1>
+          <span class="sub-title">ISRO FLIGHT-DECK AVIONICS // MODULE: BAS-EXP-01 // AIR-GAPPED SIMULATOR</span>
+        </div>
+      </div>
+
+      <!-- Live MET Counter -->
+      <div class="met-counter-pill" title="Mission Elapsed Time">
+        <span class="met-label">[MET:</span>
+        <span id="met-clock" class="met-value mono-value">00:00:00</span>
+        <span class="met-label">]</span>
+      </div>
+
+      <!-- Engine Status Pill: RUST vs PYTHON -->
+      <div id="engine-pill" class="engine-status-pill engine-python" title="Safety-Critical State Engine">
+        <span class="pulse-dot"></span>
+        <span id="engine-pill-text">CORE: PY_FALLBACK</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <span class="hud-chip active">[BUS: LOCALHOST]</span>
+      <span id="mode-header-chip" class="hud-chip active">[MODE: LIVE WEBCAM]</span>
+      <span class="hud-chip">[PROTO: FLUID_PHYSICS]</span>
+    </div>
+
+    <div class="header-right">
+      <!-- Auto-Run Full Mission Button -->
+      <button id="auto-run-btn" class="hud-btn auto-btn" onclick="toggleAutoMission()" title="Automate full nominal experiment run">
+        <span id="auto-run-icon">▶</span>
+        <span id="auto-run-label">AUTO-RUN MISSION</span>
+      </button>
+
+      <!-- Audio Mute Toggle -->
+      <button id="voice-toggle-btn" class="hud-btn active" title="Toggle Voice Annunciator">
+        <span id="voice-icon">🔊</span>
+        <span id="voice-label">VOICE: ACTIVE</span>
+      </button>
+
+      <!-- Protocol Reset Button -->
+      <button id="reset-fsm-btn" class="hud-btn reset-btn" onclick="resetProtocolState()" title="Reset protocol state machine (Hot key: R)">
+        <span>↺ RESET (R)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== THREE-COLUMN HUD GRID ==================== -->
+  <main class="mission-grid">
+
+    <!-- LEFT COLUMN (25%): MISSION PROTOCOL STEP LADDER -->
+    <section class="panel ladder-panel" id="ladder-col">
+      <div class="panel-header">
+        <div class="panel-title-group">
+          <span class="panel-index">01</span>
+          <h2 class="panel-title">MISSION PROTOCOL LADDER</h2>
+        </div>
+        <span id="ladder-progress-counter" class="mono-value" style="color: var(--color-mission-cyan); font-weight: 700;">0 / 5</span>
+      </div>
+
+      <div class="protocol-meta-card">
+        <div class="protocol-title-row">
+          <span id="protocol-name-display" class="protocol-name">Fluid Physics &amp; Protein Crystallization</span>
+          <span class="telemetry-code" style="color: var(--color-steel-slate); font-size: 9px;">[CLICK STEP TO TEST]</span>
+        </div>
+        <div class="progress-track">
+          <div id="protocol-progress-bar" class="progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- 5-Step Live Ladder List (Clickable steps) -->
+      <div class="ladder-scroll" id="ladder-steps-list">
+        <!-- Dynamically rendered with badges [✓], [● ACTIVE], [ ], [! SKIPPED] -->
+      </div>
+
+      <div class="ladder-footer">
+        <span class="expected-callout-label">EXPECTED ACTION TARGET:</span>
+        <span id="expected-action-display" class="expected-callout-value mono-value">Step 1 — Open sample chamber</span>
+      </div>
+    </section>
+
+    <!-- CENTER COLUMN (50%): LIVE HUD VIDEO CANVAS & SIMULATION SUITE -->
+    <section class="panel video-panel" id="center-video-col">
+      <div class="panel-header">
+        <div class="panel-title-group">
+          <span class="panel-index">02</span>
+          <h2 class="panel-title">FLIGHT-DECK HUD VIEWPORT &amp; VISION</h2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span id="fps-display" class="mono-value" style="font-size: 10px; color: var(--color-steel-slate);">20 FPS</span>
+          <span id="feed-status-badge" class="telemetry-code status-active-green" onclick="reloadVideoStream()" style="cursor: pointer;" title="Click to refresh video stream">● LIVE WEBCAM ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="video-viewport">
+        <!-- Live HUD Video Stream (MJPEG with Content-Length delimiter) -->
+        <img id="hud-video-stream" class="video-stream-element" src="/video_feed" alt="ISRO BAS Experiment Camera Feed" title="Click to refresh video stream" onclick="reloadVideoStream()">
+
+        <!-- Critical Overlay Alert Banner (Single-alert priority) -->
+        <div id="hud-alert-banner" class="hud-alert-banner hidden">
+          <div class="banner-left">
+            <span id="banner-icon" class="banner-icon">⚠</span>
+            <div>
+              <div id="banner-title" class="banner-title">CAUTION: TRAJECTORY WARNING</div>
+              <div id="banner-message" class="banner-message">Hand converging on wrong target</div>
+            </div>
+          </div>
+          <button id="banner-ack-btn" class="banner-ack-btn">ACKNOWLEDGE</button>
+        </div>
+
+        <!-- Cockpit Corner Watermarks -->
+        <div class="hud-corner hud-corner-tl">TARGET: <span id="hud-target-name" style="color: var(--color-mission-cyan);">SAMPLE_CHAMBER</span></div>
+        <div class="hud-corner hud-corner-tr">STATUS: <span id="hud-corner-status" style="color: var(--color-nominal-green);">NOMINAL</span></div>
+        <div class="hud-corner hud-corner-bl">LATENCY: <span id="hud-latency" style="color: var(--color-mission-cyan);">8ms</span></div>
+        <div class="hud-corner hud-corner-br">ENGINE: <span id="hud-corner-engine" style="color: var(--color-solar-amber);">PY_FALLBACK</span></div>
+      </div>
+
+      <!-- Quick Action / Interactive Simulation Command Bar -->
+      <div class="presentation-bar">
+        <div class="hotkey-guide-pill">
+          HOTKEYS: <span class="hotkey-tag">[1-5]</span> Steps &bull; <span class="hotkey-tag">[S]</span> Skip &bull; <span class="hotkey-tag">[H]</span> Hold &bull; <span class="hotkey-tag">[P]</span> Pre-Error &bull; <span class="hotkey-tag">[R]</span> Reset
+        </div>
+        <div class="simulation-buttons">
+          <button class="sim-btn" onclick="triggerStep(0)" title="Key 1">1. Chamber</button>
+          <button class="sim-btn" onclick="triggerStep(1)" title="Key 2">2. Cartridge</button>
+          <button class="sim-btn" onclick="triggerStep(2)" title="Key 3">3. Probe</button>
+          <button class="sim-btn" onclick="triggerStep(3)" title="Key 4">4. Seal</button>
+          <button class="sim-btn" onclick="triggerStep(4)" title="Key 5">5. Agitator</button>
+          <button class="sim-btn sim-warn" onclick="triggerPreError()" title="Key P" style="color: var(--color-solar-amber); border-color: rgba(255,179,0,0.4);">⚡ Pre-Error</button>
+          <button class="sim-btn sim-skip" onclick="triggerSkip()" title="Key S" style="color: var(--color-alert-crimson); border-color: rgba(255,59,48,0.4);">⚠ Skip</button>
+          <button class="sim-btn sim-hold" onclick="triggerHold()" title="Key H" style="color: var(--color-mission-cyan); border-color: rgba(0,229,255,0.4);">⏸ Hold</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN (25%): TELEMETRY METRICS & AUDIT LOG -->
+    <section class="telemetry-panel" id="right-telemetry-col">
+      
+      <!-- Telemetry Gauges Section -->
+      <div class="metrics-section">
+        <div class="panel-header" style="height: 28px; padding: 0; background: transparent; border: none;">
+          <div class="panel-title-group">
+            <span class="panel-index">03</span>
+            <h2 class="panel-title" style="font-size: 10px;">DECISION TELEMETRY</h2>
+          </div>
+        </div>
+
+        <!-- System State Badge -->
+        <div class="system-state-card">
+          <span class="state-label">SYSTEM STATE:</span>
+          <span id="system-state-badge" class="state-badge badge-nominal">NOMINAL</span>
+        </div>
+
+        <!-- Real-Time Confidence Gauge Bar -->
+        <div class="gauge-card">
+          <div class="gauge-header">
+            <span class="gauge-title">ACTION CONFIDENCE</span>
+            <span id="confidence-value-display" class="gauge-value mono-value">94%</span>
+          </div>
+          <div class="gauge-track">
+            <!-- 65% Safety Gate Marker -->
+            <div class="gate-marker" style="left: 65%;" title="Confidence Safety Gate (65%)"></div>
+            <div id="confidence-gauge-bar" class="gauge-fill confidence" style="width: 94%;"></div>
+          </div>
+          <div class="gauge-subtext">
+            <span>SAFE GATE: 65%</span>
+            <span>STATUS: NOMINAL LOCK</span>
+          </div>
+        </div>
+
+        <!-- Astronaut Hesitation / Cognitive Load Meter -->
+        <div class="gauge-card">
+          <div class="gauge-header">
+            <span class="gauge-title">HESITATION / COGNITIVE LOAD</span>
+            <span id="hesitation-value-display" class="gauge-value mono-value">0.12</span>
+          </div>
+          <div class="gauge-track">
+            <div id="hesitation-gauge-bar" class="gauge-fill hesitation" style="width: 12%;"></div>
+          </div>
+          <div class="gauge-subtext">
+            <span>DWELL TICKS &amp; JITTER</span>
+            <span id="hesitation-eval-status">NOMINAL FOCUS</span>
+          </div>
+        </div>
+
+        <!-- Real-Time Sparkline Trend Chart -->
+        <div class="sparkline-card">
+          <div class="sparkline-header">
+            <span class="telemetry-code" style="font-size: 9px; color: var(--color-steel-slate);">ROLLING TELEMETRY (30s)</span>
+            <div style="display: flex; gap: 8px; font-size: 9px; font-family: var(--font-mono);">
+              <span style="color: var(--color-mission-cyan);">&#9644; CONF</span>
+              <span style="color: var(--color-solar-amber);">&#9644; HESIT</span>
+            </div>
+          </div>
+          <canvas id="telemetry-sparkline" width="280" height="46" class="sparkline-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Scrolling Monospace Event Log (Section 8 JSONL Audit Contract) -->
+      <div class="log-section">
+        <div class="panel-header" style="height: 32px;">
+          <span class="panel-title" style="font-size: 10px;">MISSION AUDIT EVENT LOG</span>
+          <span class="telemetry-code" style="color: var(--color-steel-slate); font-size: 9px;">JSONL STREAM</span>
+        </div>
+        <div class="log-stream" id="event-log-container">
+          <!-- Dynamic JSONL audit cards stream here (newest on top) -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================== STATUS FOOTER ==================== -->
+  <footer class="hud-footer">
+    <div class="footer-left">
+      <span>BHARATIYA ANTARIKSH STATION (BAS)</span>
+      <span>PAYLOAD: PROTEIN_CRYSTALLIZATION_01</span>
+      <span>STANDARD: ISRO-AV-STD-2026</span>
+    </div>
+    <div class="footer-right">
+      <span>WS: <span id="ws-status-indicator" class="status-active-green">CONNECTED</span></span>
+      <span>CV: <span class="status-active-green">ACTIVE</span></span>
+      <span>VOICE: <span id="voice-footer-status">ONLINE</span></span>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

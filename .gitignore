@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+bvenv/
+ENV/
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and captured runtime images
+*.log
+test_camera_capture.jpg
+camera_0_preview.jpg
+live_stream_frame.jpg
+test_decoded.jpg
+
+# Large model binaries (downloaded dynamically on launch)
+*.pt
+!models/keep.txt
+
+# OS Generated
+.DS_Store
+Thumbs.db

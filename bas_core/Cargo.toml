@@ -1,0 +1,16 @@
+[package]
+name = "bas_core"
+version = "0.1.0"
+edition = "2021"
+authors = ["ISRO Bharatiya Antariksh Station Avionics Team"]
+description = "Deterministic Safety-Critical Protocol State Machine for BAS Payload Operations"
+
+[lib]
+name = "bas_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["extension-module"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
