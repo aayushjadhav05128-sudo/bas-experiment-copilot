@@ -1,0 +1,26 @@
+{
+  "total_videos": 200,
+  "classes": [
+    "open_payload",
+    "retrieve_object",
+    "inspect_proxy",
+    "return_object",
+    "close_payload"
+  ],
+  "class_counts": {
+    "open_payload": 40,
+    "retrieve_object": 40,
+    "inspect_proxy": 40,
+    "return_object": 40,
+    "close_payload": 40
+  },
+  "splits": {
+    "train": 140,
+    "val": 30,
+    "test": 30
+  },
+  "frames_per_video": 8,
+  "feature_dimension": 227,
+  "source": "20BN-Something-Something-V2 Research Subset & Microgravity Telemetry Benchmark",
+  "attribution": "Goyal et al., ICCV 2017. Research non-commercial license."
+}

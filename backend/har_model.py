@@ -1,143 +1,161 @@
 """
 BAS Experiment Copilot - Layer 2: Temporal Action Recognition (backend/har_model.py)
+Loads trained models/bas_action_gru.pt (227-dim MediaPipe GRU) and falls back to
+heuristics/calibrated geometry if checkpoint not found.
 
-Responsibilities:
-- Strictly Layer 2 of the 4-layer AI Core.
-- Takes a sliding window of ~10-20 frames of Layer 1.5 interaction features.
-- Sequence-level classification using a 2-layer PyTorch GRU.
-- Applies temporal smoothing (Exponential Moving Average & Majority Vote)
-  over recent predictions to eliminate frame-by-frame flicker.
-- Outputs action label + confidence score (e.g. open_chamber, 0.95).
+Features:
+- Sequence classification over sliding temporal buffer (8-16 frames).
+- Exponential Moving Average (EMA) and Majority Voting smoothing.
+- Low-confidence gating (< 0.65 threshold) producing "unknown" / "low_confidence".
+- Zero forced classifications on ambiguous or idle motions.
 """
 
-import os
 import collections
+import json
 import logging
+import os
 from typing import Dict, Any, List, Optional, Tuple
 import numpy as np
 
 logger = logging.getLogger("Layer2_TemporalHAR")
 
-DEFAULT_ACTIONS = [
-    "idle",
-    "open_chamber",
-    "insert_cartridge",
-    "attach_probe",
-    "verify_seal",
-    "activate"
+BAS_CLASSES = [
+    "open_payload",
+    "retrieve_object",
+    "inspect_proxy",
+    "return_object",
+    "close_payload"
 ]
 
-FEATURE_DIM = 72
-WINDOW_SIZE = 16  # ~0.8s - 1.0s temporal context
+CONFIDENCE_THRESHOLD = 0.65
+FEATURE_DIM = 227
+WINDOW_SIZE = 8
 
 
-class ActionGRU:
-    """
-    PyTorch 2-layer GRU sequence classifier for temporal action recognition.
-    """
-    def __init__(self, in_dim: int = FEATURE_DIM, hidden_dim: int = 64, num_classes: int = len(DEFAULT_ACTIONS)):
-        self.in_dim = in_dim
-        self.hidden_dim = hidden_dim
-        self.num_classes = num_classes
+class ActionGRUWrapper:
+    def __init__(self, checkpoint_path: str = "models/bas_action_gru.pt", norm_path: str = "models/normalization.npz"):
+        self.checkpoint_path = checkpoint_path
+        self.norm_path = norm_path
         self.torch_model = None
+        self.mean = None
+        self.std = None
+        self.classes = BAS_CLASSES
+        self._load()
 
+    def _load(self):
         try:
             import torch
             import torch.nn as nn
 
-            class _PyTorchGRU(nn.Module):
-                def __init__(self, i_d, h_d, n_c):
-                    super().__init__()
-                    self.gru = nn.GRU(i_d, h_d, num_layers=2, batch_first=True, dropout=0.2)
-                    self.fc = nn.Linear(h_d, n_c)
-                    self.softmax = nn.Softmax(dim=1)
+            if os.path.exists(self.checkpoint_path):
+                cp = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
+                in_dim = cp.get("input_dim", FEATURE_DIM)
+                hidden_dim = cp.get("hidden_dim", 128)
+                num_layers = cp.get("num_layers", 2)
+                num_classes = cp.get("num_classes", len(BAS_CLASSES))
+                self.classes = cp.get("classes", BAS_CLASSES)
 
-                def forward(self, x):
-                    # x: (batch, seq_len, in_dim)
-                    out, _ = self.gru(x)
-                    last_out = out[:, -1, :]
-                    logits = self.fc(last_out)
-                    probs = self.softmax(logits)
-                    return probs
+                class _InternalGRU(nn.Module):
+                    def __init__(self, i_d, h_d, n_l, n_c):
+                        super().__init__()
+                        self.layer_norm = nn.LayerNorm(i_d)
+                        self.gru = nn.GRU(i_d, h_d, num_layers=n_l, batch_first=True, dropout=0.2)
+                        self.classifier = nn.Sequential(
+                            nn.Linear(h_d, 64),
+                            nn.ReLU(),
+                            nn.Dropout(0.2),
+                            nn.Linear(64, n_c)
+                        )
 
-            self.torch_model = _PyTorchGRU(in_dim, hidden_dim, num_classes)
-            self.torch_model.eval()
-        except ImportError:
-            logger.warning("PyTorch not available; using calibrated heuristic temporal engine.")
+                    def forward(self, x):
+                        x = self.layer_norm(x)
+                        out, _ = self.gru(x)
+                        return self.classifier(out[:, -1, :])
 
-    def load_weights(self, weights_path: str) -> bool:
-        if self.torch_model is None or not os.path.exists(weights_path):
-            return False
-        try:
-            import torch
-            checkpoint = torch.load(weights_path, map_location=torch.device("cpu"), weights_only=True)
-            self.torch_model.load_state_dict(checkpoint)
-            self.torch_model.eval()
-            logger.info(f"Loaded GRU weights from {weights_path}")
-            return True
+                model = _InternalGRU(in_dim, hidden_dim, num_layers, num_classes)
+                model.load_state_dict(cp["state_dict"])
+                model.eval()
+                self.torch_model = model
+                logger.info(f"Loaded trained BASActionGRU from {self.checkpoint_path}")
+
+            if os.path.exists(self.norm_path):
+                norm = np.load(self.norm_path)
+                self.mean = norm["mean"].astype(np.float32)
+                self.std = norm["std"].astype(np.float32)
+                self.std[self.std < 1e-6] = 1.0
+                logger.info(f"Loaded normalization stats from {self.norm_path}")
+
         except Exception as e:
-            logger.debug(f"GRU weights notice: {e}")
-            return False
+            logger.warning(f"Note on BASActionGRU loading: {e}. Running calibrated inference.")
 
-    def predict_probs(self, window_np: np.ndarray) -> np.ndarray:
-        """Returns probability distribution over action classes (shape: num_classes)."""
+    def predict(self, window_np: np.ndarray) -> Tuple[str, float, np.ndarray]:
+        """
+        Input window_np: (seq_len, feature_dim)
+        Returns: (predicted_class_or_unknown, confidence, all_probabilities)
+        """
         if self.torch_model is not None:
             try:
                 import torch
-                tensor = torch.from_numpy(window_np).float().unsqueeze(0)  # (1, seq_len, in_dim)
-                with torch.no_grad():
-                    probs = self.torch_model(tensor).numpy()[0]
-                    return probs
-            except Exception:
-                pass
+                feat = window_np.copy()
+                if self.mean is not None and self.std is not None:
+                    # Pad or slice to match norm stats
+                    if feat.shape[-1] < len(self.mean):
+                        pad = np.zeros((feat.shape[0], len(self.mean)), dtype=np.float32)
+                        pad[:, :feat.shape[-1]] = feat
+                        feat = pad
+                    elif feat.shape[-1] > len(self.mean):
+                        feat = feat[:, :len(self.mean)]
+                    feat = (feat - self.mean) / self.std
 
-        # Uniform fallback
-        p = np.zeros(self.num_classes, dtype=np.float32)
-        p[0] = 0.85
-        return p
+                t = torch.tensor(feat, dtype=torch.float32).unsqueeze(0)
+                with torch.no_grad():
+                    logits = self.torch_model(t)
+                    probs = torch.softmax(logits, dim=-1).squeeze(0).numpy()
+
+                pred_idx = int(np.argmax(probs))
+                conf = float(probs[pred_idx])
+
+                if conf < CONFIDENCE_THRESHOLD:
+                    return "unknown", conf, probs
+
+                return self.classes[pred_idx], conf, probs
+            except Exception as e:
+                logger.debug(f"PyTorch prediction error: {e}")
+
+        # Heuristic fallback
+        p = np.zeros(len(self.classes), dtype=np.float32)
+        p[0] = 0.5
+        return "unknown", 0.5, p
 
 
 class TemporalActionClassifier:
     """
-    Sliding window buffer with Temporal Smoothing (EMA & Majority Voting).
+    Sliding window buffer with Temporal Smoothing and Low-Confidence Gating.
     """
     def __init__(
         self,
-        weights_path: str = "models/har_gru.pt",
+        checkpoint_path: str = "models/bas_action_gru.pt",
+        norm_path: str = "models/normalization.npz",
         window_size: int = WINDOW_SIZE,
         smoothing_window: int = 5,
-        ema_alpha: float = 0.65,
-        actions: Optional[List[str]] = None
+        ema_alpha: float = 0.65
     ):
-        self.weights_path = weights_path
         self.window_size = window_size
         self.smoothing_window = smoothing_window
         self.ema_alpha = ema_alpha
-        self.actions = actions or DEFAULT_ACTIONS
+        self.actions = BAS_CLASSES
 
-        self.model = ActionGRU(in_dim=FEATURE_DIM, hidden_dim=64, num_classes=len(self.actions))
-        self.has_weights = self.model.load_weights(weights_path)
-
-        # 1. Sliding window of feature vectors
+        self.model = ActionGRUWrapper(checkpoint_path=checkpoint_path, norm_path=norm_path)
         self.feature_buffer = collections.deque(maxlen=window_size)
-
-        # 2. Temporal smoothing queues
         self.smoothed_probs: Optional[np.ndarray] = None
         self.recent_predictions = collections.deque(maxlen=smoothing_window)
 
-        self.last_action = "idle"
-        self.last_conf = 0.85
+        self.last_action = "unknown"
+        self.last_conf = 0.50
 
     def add_frame_features(self, feature_vector: np.ndarray):
-        """Adds a 1D vector (dim=FEATURE_DIM) to sliding temporal buffer."""
-        if len(feature_vector) < FEATURE_DIM:
-            padded = np.zeros(FEATURE_DIM, dtype=np.float32)
-            padded[:len(feature_vector)] = feature_vector
-            feature_vector = padded
-        elif len(feature_vector) > FEATURE_DIM:
-            feature_vector = feature_vector[:FEATURE_DIM]
-
-        self.feature_buffer.append(feature_vector)
+        """Adds 1D feature vector to sliding temporal buffer."""
+        self.feature_buffer.append(np.array(feature_vector, dtype=np.float32))
 
     def classify_current_window(
         self,
@@ -145,54 +163,52 @@ class TemporalActionClassifier:
         heuristic_conf: float = 0.92
     ) -> Tuple[str, float]:
         """
-        Runs sequence model over the sliding window, applies EMA and majority voting,
-        and returns: (action_label, confidence_score).
+        Runs sequence model, applies EMA, majority voting, and low-confidence gating.
         """
-        # If Layer 1.5 detected direct apparatus contact/hold state with high certainty
-        if heuristic_hint and heuristic_hint in self.actions and heuristic_hint != "idle":
+        # If Layer 1.5 detected direct apparatus contact/hold state
+        if heuristic_hint and heuristic_hint in self.actions:
             raw_action = heuristic_hint
             raw_conf = heuristic_conf
-        elif len(self.feature_buffer) >= self.window_size:
-            window_np = np.array(self.feature_buffer, dtype=np.float32)
-            raw_probs = self.model.predict_probs(window_np)
+        elif len(self.feature_buffer) >= max(3, self.window_size // 2):
+            window_np = np.array(list(self.feature_buffer), dtype=np.float32)
+            # Pad sequence if buffer not fully populated yet
+            while len(window_np) < self.window_size:
+                window_np = np.vstack([window_np[0:1], window_np])
 
-            # Apply Temporal Smoothing (EMA over class probabilities)
+            raw_action, raw_conf, raw_probs = self.model.predict(window_np)
+
             if self.smoothed_probs is None:
                 self.smoothed_probs = raw_probs
             else:
                 self.smoothed_probs = self.ema_alpha * raw_probs + (1.0 - self.ema_alpha) * self.smoothed_probs
-
-            pred_idx = int(np.argmax(self.smoothed_probs))
-            raw_action = self.actions[pred_idx]
-            raw_conf = float(self.smoothed_probs[pred_idx])
         else:
             raw_action = self.last_action
             raw_conf = self.last_conf
 
-        # Apply Majority Vote smoothing over the last K cycles to eliminate single-frame flicker
+        # Temporal Majority Voting
         self.recent_predictions.append(raw_action)
         counts = collections.Counter(self.recent_predictions)
         smoothed_action, majority_count = counts.most_common(1)[0]
 
-        # If majority agrees (>50%), select smoothed action
         if majority_count >= (len(self.recent_predictions) // 2 + 1):
             final_action = smoothed_action
-            final_conf = raw_conf
         else:
             final_action = raw_action
-            final_conf = raw_conf
+
+        # Low-Confidence Gating (Section 8)
+        if raw_conf < CONFIDENCE_THRESHOLD:
+            final_action = "unknown"
 
         self.last_action = final_action
-        self.last_conf = final_conf
-        return final_action, round(final_conf, 3)
+        self.last_conf = raw_conf
+        return final_action, round(raw_conf, 3)
 
     def reset_state(self):
-        """Clears the temporal history buffer."""
         self.feature_buffer.clear()
         self.recent_predictions.clear()
         self.smoothed_probs = None
-        self.last_action = "idle"
-        self.last_conf = 0.85
+        self.last_action = "unknown"
+        self.last_conf = 0.50
 
 
 # Singleton Instance

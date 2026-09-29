@@ -1,0 +1,11 @@
+                 precision    recall  f1-score   support
+
+   open_payload     1.0000    1.0000    1.0000         6
+retrieve_object     1.0000    1.0000    1.0000         6
+  inspect_proxy     1.0000    1.0000    1.0000         6
+  return_object     1.0000    1.0000    1.0000         6
+  close_payload     1.0000    1.0000    1.0000         6
+
+       accuracy                         1.0000        30
+      macro avg     1.0000    1.0000    1.0000        30
+   weighted avg     1.0000    1.0000    1.0000        30

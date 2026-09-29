@@ -72,7 +72,12 @@ class UnifiedFSMWrapper:
         return result
 
     def trigger_pre_error(self, converging_target: str, confidence: float = 0.85) -> Dict[str, Any]:
-        result = self._engine.trigger_pre_error(converging_target, float(confidence))
+        if hasattr(self._engine, "trigger_pre_error"):
+            result = self._engine.trigger_pre_error(converging_target, float(confidence))
+        elif hasattr(self._engine, "trigger_pre_error_nudge"):
+            result = self._engine.trigger_pre_error_nudge(converging_target, float(confidence))
+        else:
+            result = {"type": "PRE_ERROR_NUDGE", "message": f"Pre-error on {converging_target}", "confidence": confidence}
         if isinstance(result, str):
             return json.loads(result)
         return result
@@ -277,7 +282,8 @@ async def perception_and_telemetry_loop():
                 "confidence": perc_result.get("action_confidence", 0.90),
                 "hesitation": perc_result["hesitation_score"],
                 "closest_object": perc_result.get("closest_object"),
-                "contact_action": perc_result.get("contact_action")
+                "contact_action": perc_result.get("contact_action"),
+                "frame_b64": latest_b64_frame
             }
             await broadcast_ws(telemetry_packet)
 
@@ -311,11 +317,10 @@ async def mjpeg_frame_generator():
         if latest_annotated_jpeg is not None:
             yield (
                 b"--frame\r\n"
-                b"Content-Type: image/jpeg\r\n"
-                b"Content-Length: " + str(len(latest_annotated_jpeg)).encode() + b"\r\n\r\n" +
+                b"Content-Type: image/jpeg\r\n\r\n" +
                 latest_annotated_jpeg + b"\r\n"
             )
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(0.04)
 
 
 @app.get("/video_feed")

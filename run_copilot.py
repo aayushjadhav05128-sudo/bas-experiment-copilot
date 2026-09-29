@@ -52,7 +52,7 @@ def preflight():
         except Exception as e:
             print(f"[!] Note on YOLO baseline: {e}")
 
-    print("[✓] Pre-flight verification complete.")
+    print("[OK] Pre-flight verification complete.")
     print("[*] Launching Mission Control Hub at http://localhost:8000 ...")
     print("[*] Press Ctrl+C in terminal to stop.")
     print("=" * 65)

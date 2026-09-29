@@ -1,0 +1,201 @@
+video_id,split_source,source_label,bas_label,video_filename
+1001,benchmark,Uncovering something,open_payload,1001.webm
+1002,benchmark,Uncovering something,open_payload,1002.webm
+1003,benchmark,Uncovering something,open_payload,1003.webm
+1004,benchmark,Opening something,open_payload,1004.webm
+1005,benchmark,Opening something,open_payload,1005.webm
+1006,benchmark,Opening something,open_payload,1006.webm
+1007,benchmark,Uncovering something,open_payload,1007.webm
+1008,benchmark,Uncovering something,open_payload,1008.webm
+1009,benchmark,Opening something,open_payload,1009.webm
+1010,benchmark,Opening something,open_payload,1010.webm
+1011,benchmark,Uncovering something,open_payload,1011.webm
+1012,benchmark,Uncovering something,open_payload,1012.webm
+1013,benchmark,Uncovering something,open_payload,1013.webm
+1014,benchmark,Opening something,open_payload,1014.webm
+1015,benchmark,Opening something,open_payload,1015.webm
+1016,benchmark,Opening something,open_payload,1016.webm
+1017,benchmark,Uncovering something,open_payload,1017.webm
+1018,benchmark,Opening something,open_payload,1018.webm
+1019,benchmark,Uncovering something,open_payload,1019.webm
+1020,benchmark,Opening something,open_payload,1020.webm
+1021,benchmark,Opening something,open_payload,1021.webm
+1022,benchmark,Uncovering something,open_payload,1022.webm
+1023,benchmark,Uncovering something,open_payload,1023.webm
+1024,benchmark,Opening something,open_payload,1024.webm
+1025,benchmark,Opening something,open_payload,1025.webm
+1026,benchmark,Opening something,open_payload,1026.webm
+1027,benchmark,Uncovering something,open_payload,1027.webm
+1028,benchmark,Uncovering something,open_payload,1028.webm
+1029,benchmark,Uncovering something,open_payload,1029.webm
+1030,benchmark,Opening something,open_payload,1030.webm
+1031,benchmark,Opening something,open_payload,1031.webm
+1032,benchmark,Uncovering something,open_payload,1032.webm
+1033,benchmark,Uncovering something,open_payload,1033.webm
+1034,benchmark,Opening something,open_payload,1034.webm
+1035,benchmark,Opening something,open_payload,1035.webm
+1036,benchmark,Uncovering something,open_payload,1036.webm
+1037,benchmark,Uncovering something,open_payload,1037.webm
+1038,benchmark,Uncovering something,open_payload,1038.webm
+1039,benchmark,Uncovering something,open_payload,1039.webm
+1040,benchmark,Uncovering something,open_payload,1040.webm
+1041,benchmark,Pulling something out of something,retrieve_object,1041.webm
+1042,benchmark,Pulling something out of something,retrieve_object,1042.webm
+1043,benchmark,Pulling something out of something,retrieve_object,1043.webm
+1044,benchmark,Taking something from somewhere,retrieve_object,1044.webm
+1045,benchmark,Taking something out of something,retrieve_object,1045.webm
+1046,benchmark,Taking something from somewhere,retrieve_object,1046.webm
+1047,benchmark,Pulling something out of something,retrieve_object,1047.webm
+1048,benchmark,Taking something from somewhere,retrieve_object,1048.webm
+1049,benchmark,Taking something out of something,retrieve_object,1049.webm
+1050,benchmark,Taking something out of something,retrieve_object,1050.webm
+1051,benchmark,Pulling something out of something,retrieve_object,1051.webm
+1052,benchmark,Pulling something out of something,retrieve_object,1052.webm
+1053,benchmark,Pulling something out of something,retrieve_object,1053.webm
+1054,benchmark,Pulling something out of something,retrieve_object,1054.webm
+1055,benchmark,Pulling something out of something,retrieve_object,1055.webm
+1056,benchmark,Pulling something out of something,retrieve_object,1056.webm
+1057,benchmark,Pulling something out of something,retrieve_object,1057.webm
+1058,benchmark,Taking something out of something,retrieve_object,1058.webm
+1059,benchmark,Pulling something out of something,retrieve_object,1059.webm
+1060,benchmark,Taking something out of something,retrieve_object,1060.webm
+1061,benchmark,Pulling something out of something,retrieve_object,1061.webm
+1062,benchmark,Taking something out of something,retrieve_object,1062.webm
+1063,benchmark,Taking something out of something,retrieve_object,1063.webm
+1064,benchmark,Taking something from somewhere,retrieve_object,1064.webm
+1065,benchmark,Taking something out of something,retrieve_object,1065.webm
+1066,benchmark,Taking something from somewhere,retrieve_object,1066.webm
+1067,benchmark,Taking something from somewhere,retrieve_object,1067.webm
+1068,benchmark,Taking something out of something,retrieve_object,1068.webm
+1069,benchmark,Taking something from somewhere,retrieve_object,1069.webm
+1070,benchmark,Taking something from somewhere,retrieve_object,1070.webm
+1071,benchmark,Taking something from somewhere,retrieve_object,1071.webm
+1072,benchmark,Pulling something out of something,retrieve_object,1072.webm
+1073,benchmark,Pulling something out of something,retrieve_object,1073.webm
+1074,benchmark,Pulling something out of something,retrieve_object,1074.webm
+1075,benchmark,Pulling something out of something,retrieve_object,1075.webm
+1076,benchmark,Pulling something out of something,retrieve_object,1076.webm
+1077,benchmark,Taking something from somewhere,retrieve_object,1077.webm
+1078,benchmark,Taking something from somewhere,retrieve_object,1078.webm
+1079,benchmark,Taking something from somewhere,retrieve_object,1079.webm
+1080,benchmark,Taking something out of something,retrieve_object,1080.webm
+1081,benchmark,Holding something,inspect_proxy,1081.webm
+1082,benchmark,Holding something,inspect_proxy,1082.webm
+1083,benchmark,Holding something,inspect_proxy,1083.webm
+1084,benchmark,Holding something,inspect_proxy,1084.webm
+1085,benchmark,Holding something,inspect_proxy,1085.webm
+1086,benchmark,Holding something,inspect_proxy,1086.webm
+1087,benchmark,Holding something,inspect_proxy,1087.webm
+1088,benchmark,Holding something,inspect_proxy,1088.webm
+1089,benchmark,Holding something,inspect_proxy,1089.webm
+1090,benchmark,Holding something,inspect_proxy,1090.webm
+1091,benchmark,Holding something,inspect_proxy,1091.webm
+1092,benchmark,Holding something,inspect_proxy,1092.webm
+1093,benchmark,Holding something,inspect_proxy,1093.webm
+1094,benchmark,Holding something,inspect_proxy,1094.webm
+1095,benchmark,Holding something,inspect_proxy,1095.webm
+1096,benchmark,Holding something,inspect_proxy,1096.webm
+1097,benchmark,Holding something,inspect_proxy,1097.webm
+1098,benchmark,Holding something,inspect_proxy,1098.webm
+1099,benchmark,Holding something,inspect_proxy,1099.webm
+1100,benchmark,Holding something,inspect_proxy,1100.webm
+1101,benchmark,Holding something,inspect_proxy,1101.webm
+1102,benchmark,Holding something,inspect_proxy,1102.webm
+1103,benchmark,Holding something,inspect_proxy,1103.webm
+1104,benchmark,Holding something,inspect_proxy,1104.webm
+1105,benchmark,Holding something,inspect_proxy,1105.webm
+1106,benchmark,Holding something,inspect_proxy,1106.webm
+1107,benchmark,Holding something,inspect_proxy,1107.webm
+1108,benchmark,Holding something,inspect_proxy,1108.webm
+1109,benchmark,Holding something,inspect_proxy,1109.webm
+1110,benchmark,Holding something,inspect_proxy,1110.webm
+1111,benchmark,Holding something,inspect_proxy,1111.webm
+1112,benchmark,Holding something,inspect_proxy,1112.webm
+1113,benchmark,Holding something,inspect_proxy,1113.webm
+1114,benchmark,Holding something,inspect_proxy,1114.webm
+1115,benchmark,Holding something,inspect_proxy,1115.webm
+1116,benchmark,Holding something,inspect_proxy,1116.webm
+1117,benchmark,Holding something,inspect_proxy,1117.webm
+1118,benchmark,Holding something,inspect_proxy,1118.webm
+1119,benchmark,Holding something,inspect_proxy,1119.webm
+1120,benchmark,Holding something,inspect_proxy,1120.webm
+1121,benchmark,Putting something into something,return_object,1121.webm
+1122,benchmark,Putting something into something,return_object,1122.webm
+1123,benchmark,Putting something into something,return_object,1123.webm
+1124,benchmark,Putting something into something,return_object,1124.webm
+1125,benchmark,Putting something into something,return_object,1125.webm
+1126,benchmark,Putting something into something,return_object,1126.webm
+1127,benchmark,Putting something into something,return_object,1127.webm
+1128,benchmark,Putting something into something,return_object,1128.webm
+1129,benchmark,Putting something into something,return_object,1129.webm
+1130,benchmark,Putting something into something,return_object,1130.webm
+1131,benchmark,Putting something into something,return_object,1131.webm
+1132,benchmark,Putting something into something,return_object,1132.webm
+1133,benchmark,Putting something into something,return_object,1133.webm
+1134,benchmark,Putting something into something,return_object,1134.webm
+1135,benchmark,Putting something into something,return_object,1135.webm
+1136,benchmark,Putting something into something,return_object,1136.webm
+1137,benchmark,Putting something into something,return_object,1137.webm
+1138,benchmark,Putting something into something,return_object,1138.webm
+1139,benchmark,Putting something into something,return_object,1139.webm
+1140,benchmark,Putting something into something,return_object,1140.webm
+1141,benchmark,Putting something into something,return_object,1141.webm
+1142,benchmark,Putting something into something,return_object,1142.webm
+1143,benchmark,Putting something into something,return_object,1143.webm
+1144,benchmark,Putting something into something,return_object,1144.webm
+1145,benchmark,Putting something into something,return_object,1145.webm
+1146,benchmark,Putting something into something,return_object,1146.webm
+1147,benchmark,Putting something into something,return_object,1147.webm
+1148,benchmark,Putting something into something,return_object,1148.webm
+1149,benchmark,Putting something into something,return_object,1149.webm
+1150,benchmark,Putting something into something,return_object,1150.webm
+1151,benchmark,Putting something into something,return_object,1151.webm
+1152,benchmark,Putting something into something,return_object,1152.webm
+1153,benchmark,Putting something into something,return_object,1153.webm
+1154,benchmark,Putting something into something,return_object,1154.webm
+1155,benchmark,Putting something into something,return_object,1155.webm
+1156,benchmark,Putting something into something,return_object,1156.webm
+1157,benchmark,Putting something into something,return_object,1157.webm
+1158,benchmark,Putting something into something,return_object,1158.webm
+1159,benchmark,Putting something into something,return_object,1159.webm
+1160,benchmark,Putting something into something,return_object,1160.webm
+1161,benchmark,Closing something,close_payload,1161.webm
+1162,benchmark,Closing something,close_payload,1162.webm
+1163,benchmark,Closing something,close_payload,1163.webm
+1164,benchmark,Closing something,close_payload,1164.webm
+1165,benchmark,Closing something,close_payload,1165.webm
+1166,benchmark,Closing something,close_payload,1166.webm
+1167,benchmark,Closing something,close_payload,1167.webm
+1168,benchmark,Closing something,close_payload,1168.webm
+1169,benchmark,Closing something,close_payload,1169.webm
+1170,benchmark,Closing something,close_payload,1170.webm
+1171,benchmark,Closing something,close_payload,1171.webm
+1172,benchmark,Closing something,close_payload,1172.webm
+1173,benchmark,Closing something,close_payload,1173.webm
+1174,benchmark,Closing something,close_payload,1174.webm
+1175,benchmark,Closing something,close_payload,1175.webm
+1176,benchmark,Closing something,close_payload,1176.webm
+1177,benchmark,Closing something,close_payload,1177.webm
+1178,benchmark,Closing something,close_payload,1178.webm
+1179,benchmark,Closing something,close_payload,1179.webm
+1180,benchmark,Closing something,close_payload,1180.webm
+1181,benchmark,Closing something,close_payload,1181.webm
+1182,benchmark,Closing something,close_payload,1182.webm
+1183,benchmark,Closing something,close_payload,1183.webm
+1184,benchmark,Closing something,close_payload,1184.webm
+1185,benchmark,Closing something,close_payload,1185.webm
+1186,benchmark,Closing something,close_payload,1186.webm
+1187,benchmark,Closing something,close_payload,1187.webm
+1188,benchmark,Closing something,close_payload,1188.webm
+1189,benchmark,Closing something,close_payload,1189.webm
+1190,benchmark,Closing something,close_payload,1190.webm
+1191,benchmark,Closing something,close_payload,1191.webm
+1192,benchmark,Closing something,close_payload,1192.webm
+1193,benchmark,Closing something,close_payload,1193.webm
+1194,benchmark,Closing something,close_payload,1194.webm
+1195,benchmark,Closing something,close_payload,1195.webm
+1196,benchmark,Closing something,close_payload,1196.webm
+1197,benchmark,Closing something,close_payload,1197.webm
+1198,benchmark,Closing something,close_payload,1198.webm
+1199,benchmark,Closing something,close_payload,1199.webm
+1200,benchmark,Closing something,close_payload,1200.webm

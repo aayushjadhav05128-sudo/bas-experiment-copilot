@@ -1,0 +1,22 @@
+{
+  "name": "bas-experiment-copilot",
+  "version": "1.0.0",
+  "description": "Bharatiya Antariksh Station (BAS) Payload Operations Copilot",
+  "scripts": {
+    "dev": "python run_copilot.py",
+    "start": "python run_copilot.py",
+    "demo": "python run_bas_demo.py",
+    "inference": "python inference_action.py --source 0",
+    "train": "python -m train.build_complete_dataset_and_train"
+  },
+  "keywords": [
+    "isro",
+    "bas",
+    "aerospace",
+    "copilot",
+    "computer-vision",
+    "fastapi"
+  ],
+  "author": "BAS Copilot Team",
+  "license": "ISC"
+}

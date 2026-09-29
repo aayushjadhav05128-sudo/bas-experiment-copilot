@@ -203,12 +203,23 @@ class PerceptionPipeline:
         landmarks: Dict[str, Tuple[int, int]] = {}
 
         # 1. MediaPipe Pose & Hands extraction
+        landmark_feat_227 = np.zeros(227, dtype=np.float32)
         if self.mp_hands and not self.simulated_mode:
             import cv2
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h_res = self.mp_hands.process(rgb)
             if h_res.multi_hand_landmarks:
-                for hand_lms in h_res.multi_hand_landmarks:
+                for idx_h, hand_lms in enumerate(h_res.multi_hand_landmarks):
+                    handedness = "right"
+                    if h_res.multi_handedness and idx_h < len(h_res.multi_handedness):
+                        handedness = h_res.multi_handedness[idx_h].classification[0].label.lower()
+                    offset = 99 if handedness == "left" else 163
+                    landmark_feat_227[offset] = 1.0
+                    for j, lm in enumerate(hand_lms.landmark):
+                        b_idx = offset + 1 + (j * 3)
+                        if b_idx + 2 < 227:
+                            landmark_feat_227[b_idx:b_idx+3] = [lm.x, lm.y, lm.z]
+
                     w_lm = hand_lms.landmark[0]  # wrist
                     i_lm = hand_lms.landmark[8]  # index tip
                     t_lm = hand_lms.landmark[4]  # thumb tip
@@ -217,13 +228,14 @@ class PerceptionPipeline:
                     landmarks["index_tip"] = (int(i_lm.x * w), int(i_lm.y * h))
                     landmarks["thumb_tip"] = (int(t_lm.x * w), int(t_lm.y * h))
                     landmarks["middle_tip"] = (int(m_lm.x * w), int(m_lm.y * h))
-                    break
 
             if self.mp_pose:
                 p_res = self.mp_pose.process(rgb)
                 if p_res.pose_landmarks:
+                    for j, lm in enumerate(p_res.pose_landmarks.landmark):
+                        if j * 3 + 2 < 99:
+                            landmark_feat_227[j*3 : j*3+3] = [lm.x, lm.y, lm.z]
                     pl = p_res.pose_landmarks.landmark
-                    # Right shoulder: 12, Right elbow: 14, Right wrist: 16
                     landmarks["shoulder"] = (int(pl[12].x * w), int(pl[12].y * h))
                     landmarks["elbow"] = (int(pl[14].x * w), int(pl[14].y * h))
                     if "wrist" not in landmarks:
@@ -233,6 +245,15 @@ class PerceptionPipeline:
         if "wrist" not in landmarks or "index_tip" not in landmarks:
             hand_center = self._find_sim_hand_centroid(frame)
             hx, hy = hand_center
+            landmarks["wrist"] = (hx - 15, hy + 20)
+            landmarks["elbow"] = (hx - 40, hy + 70)
+            landmarks["shoulder"] = (hx - 60, hy + 130)
+            landmarks["index_tip"] = (hx, hy)
+            landmarks["thumb_tip"] = (hx - 10, hy - 5)
+            # Embed fallback positions
+            landmark_feat_227[48:51] = [hx / 640.0, hy / 480.0, 0.0]
+            landmark_feat_227[163] = 1.0
+            landmark_feat_227[164:167] = [hx / 640.0, hy / 480.0, 0.0]
             landmarks["wrist"] = (hx - 15, hy + 20)
             landmarks["elbow"] = (hx - 40, hy + 70)
             landmarks["shoulder"] = (hx - 60, hy + 130)
@@ -278,7 +299,8 @@ class PerceptionPipeline:
 
         return {
             "objects": detected_objects,
-            "landmarks": landmarks
+            "landmarks": landmarks,
+            "landmark_vector": landmark_feat_227
         }
 
     # ==================== LAYER 1.5: INTERACTION FEATURES ====================
@@ -368,12 +390,16 @@ class PerceptionPipeline:
                 dwell_time = now - self.hand_pos_history[0][2]
                 hesitation_score = min(1.0, (dwell_time / 0.5) * 0.8 + (std_x + std_y) / 60.0)
 
-        # 5. Build 72-Dimensional Dense Motion Vector for Temporal HAR
-        feature_vector = np.zeros(72, dtype=np.float32)
-        feature_vector[0] = hx / 640.0
-        feature_vector[1] = hy / 480.0
-        feature_vector[2] = vx / 500.0
-        feature_vector[3] = vy / 500.0
+        # 5. Build 227-Dimensional Vector for Temporal HAR
+        landmark_vec = layer1_data.get("landmark_vector")
+        if landmark_vec is not None and np.count_nonzero(landmark_vec) > 0:
+            feature_vector = landmark_vec.copy()
+        else:
+            feature_vector = np.zeros(227, dtype=np.float32)
+            feature_vector[0] = hx / 640.0
+            feature_vector[1] = hy / 480.0
+            feature_vector[2] = vx / 500.0
+            feature_vector[3] = vy / 500.0
 
         step_keys = ["sample_chamber", "cartridge", "sensor_probe", "chamber_seal", "agitator_switch"]
         for idx, key in enumerate(step_keys):

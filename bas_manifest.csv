@@ -1,0 +1,81 @@
+video_id,split_source,source_label,bas_label,video_filename
+1065,train,Closing something,close_payload,1065.webm
+1066,train,Closing something,close_payload,1066.webm
+1067,train,Closing something,close_payload,1067.webm
+1068,train,Closing something,close_payload,1068.webm
+1069,train,Closing something,close_payload,1069.webm
+1070,train,Closing something,close_payload,1070.webm
+1071,train,Closing something,close_payload,1071.webm
+1072,train,Closing something,close_payload,1072.webm
+1073,train,Closing something,close_payload,1073.webm
+1074,train,Closing something,close_payload,1074.webm
+1075,train,Closing something,close_payload,1075.webm
+1076,train,Closing something,close_payload,1076.webm
+1077,val,Closing something,close_payload,1077.webm
+1078,val,Closing something,close_payload,1078.webm
+1079,val,Closing something,close_payload,1079.webm
+1080,val,Closing something,close_payload,1080.webm
+1033,train,Holding something,inspect_proxy,1033.webm
+1034,train,Holding something,inspect_proxy,1034.webm
+1035,train,Holding something,inspect_proxy,1035.webm
+1036,train,Holding something,inspect_proxy,1036.webm
+1037,train,Holding something,inspect_proxy,1037.webm
+1038,train,Holding something,inspect_proxy,1038.webm
+1039,train,Holding something,inspect_proxy,1039.webm
+1040,train,Holding something,inspect_proxy,1040.webm
+1041,train,Holding something,inspect_proxy,1041.webm
+1042,train,Holding something,inspect_proxy,1042.webm
+1043,train,Holding something,inspect_proxy,1043.webm
+1044,train,Holding something,inspect_proxy,1044.webm
+1045,val,Holding something,inspect_proxy,1045.webm
+1046,val,Holding something,inspect_proxy,1046.webm
+1047,val,Holding something,inspect_proxy,1047.webm
+1048,val,Holding something,inspect_proxy,1048.webm
+1001,train,Uncovering something,open_payload,1001.webm
+1002,train,Uncovering something,open_payload,1002.webm
+1003,train,Uncovering something,open_payload,1003.webm
+1004,train,Uncovering something,open_payload,1004.webm
+1005,train,Uncovering something,open_payload,1005.webm
+1006,train,Opening something,open_payload,1006.webm
+1007,train,Uncovering something,open_payload,1007.webm
+1008,train,Uncovering something,open_payload,1008.webm
+1009,train,Opening something,open_payload,1009.webm
+1010,train,Opening something,open_payload,1010.webm
+1011,train,Uncovering something,open_payload,1011.webm
+1012,train,Opening something,open_payload,1012.webm
+1013,val,Opening something,open_payload,1013.webm
+1014,val,Uncovering something,open_payload,1014.webm
+1015,val,Opening something,open_payload,1015.webm
+1016,val,Opening something,open_payload,1016.webm
+1017,train,Taking something from somewhere,retrieve_object,1017.webm
+1018,train,Taking something out of something,retrieve_object,1018.webm
+1019,train,Taking something out of something,retrieve_object,1019.webm
+1020,train,Taking something out of something,retrieve_object,1020.webm
+1021,train,Taking something from somewhere,retrieve_object,1021.webm
+1022,train,Taking something out of something,retrieve_object,1022.webm
+1023,train,Taking something from somewhere,retrieve_object,1023.webm
+1024,train,Taking something out of something,retrieve_object,1024.webm
+1025,train,Taking something out of something,retrieve_object,1025.webm
+1026,train,Taking something from somewhere,retrieve_object,1026.webm
+1027,train,Taking something out of something,retrieve_object,1027.webm
+1028,train,Taking something from somewhere,retrieve_object,1028.webm
+1029,val,Taking something from somewhere,retrieve_object,1029.webm
+1030,val,Taking something out of something,retrieve_object,1030.webm
+1031,val,Taking something from somewhere,retrieve_object,1031.webm
+1032,val,Taking something out of something,retrieve_object,1032.webm
+1049,train,Putting something into something,return_object,1049.webm
+1050,train,Putting something into something,return_object,1050.webm
+1051,train,Putting something into something,return_object,1051.webm
+1052,train,Putting something into something,return_object,1052.webm
+1053,train,Putting something into something,return_object,1053.webm
+1054,train,Putting something into something,return_object,1054.webm
+1055,train,Putting something into something,return_object,1055.webm
+1056,train,Putting something into something,return_object,1056.webm
+1057,train,Putting something into something,return_object,1057.webm
+1058,train,Putting something into something,return_object,1058.webm
+1059,train,Putting something into something,return_object,1059.webm
+1060,train,Putting something into something,return_object,1060.webm
+1061,val,Putting something into something,return_object,1061.webm
+1062,val,Putting something into something,return_object,1062.webm
+1063,val,Putting something into something,return_object,1063.webm
+1064,val,Putting something into something,return_object,1064.webm

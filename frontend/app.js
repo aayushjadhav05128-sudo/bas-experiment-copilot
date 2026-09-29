@@ -268,6 +268,13 @@ function handleTelemetryMessage(msg) {
     updateMeters(conf, hesit);
     pushSparklineData(conf, hesit);
 
+    if (msg.frame_b64) {
+      const streamImg = document.getElementById("hud-video-stream");
+      if (streamImg) {
+        streamImg.src = "data:image/jpeg;base64," + msg.frame_b64;
+      }
+    }
+
     if (msg.closest_object) {
       const targetEl = document.getElementById("hud-target-name");
       if (targetEl) targetEl.textContent = msg.closest_object.toUpperCase();

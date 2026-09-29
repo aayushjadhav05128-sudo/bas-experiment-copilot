@@ -38,6 +38,25 @@ DEFAULT_PROTOCOL_DATA = {
     ]
 }
 
+ACTION_ALIASES = {
+    "open_payload": ["open_chamber", "open_payload"],
+    "open_chamber": ["open_payload", "open_chamber"],
+    "retrieve_object": ["retrieve_object", "insert_cartridge"],
+    "insert_cartridge": ["retrieve_object", "insert_cartridge"],
+    "inspect_proxy": ["inspect_proxy", "attach_probe"],
+    "attach_probe": ["inspect_proxy", "attach_probe"],
+    "return_object": ["return_object", "verify_seal"],
+    "verify_seal": ["return_object", "verify_seal"],
+    "close_payload": ["close_payload", "activate"],
+    "activate": ["close_payload", "activate"]
+}
+
+def actions_match(action1: str, action2: str) -> bool:
+    if action1 == action2:
+        return True
+    aliases = ACTION_ALIASES.get(action1, [action1])
+    return action2 in aliases
+
 
 class ProtocolFSM:
     """
@@ -155,7 +174,7 @@ class ProtocolFSM:
 
         # 3. Matching current step -> advance by 1
         current_step = self.steps[self.current_step_index]
-        if detected_action == current_step["action"]:
+        if actions_match(detected_action, current_step["action"]):
             self.completed_step_ids.append(current_step["id"])
             self.current_step_index += 1
             if self.current_step_index >= len(self.steps):
@@ -164,12 +183,12 @@ class ProtocolFSM:
 
         # 4. Matches a future step
         future_actions = [s["action"] for s in self.steps[self.current_step_index + 1:]]
-        if detected_action in future_actions:
+        if any(actions_match(detected_action, fa) for fa in future_actions):
             return OUT_OF_ORDER
 
         # 5. Matches a past (already completed) step
         past_actions = [s["action"] for s in self.steps[:self.current_step_index]]
-        if detected_action in past_actions:
+        if any(actions_match(detected_action, pa) for pa in past_actions):
             return SKIPPED
 
         # 6. Unrelated / unknown action
@@ -315,6 +334,8 @@ class ProtocolFSM:
         }
         self.active_alert = event
         return event
+
+    trigger_pre_error = trigger_pre_error_nudge
 
     def get_state(self) -> Dict[str, Any]:
         """Returns snapshot of current FSM state for API and frontend HUD."""

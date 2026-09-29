@@ -25,6 +25,7 @@ test_decoded.jpg
 # Large model binaries (downloaded dynamically on launch)
 *.pt
 !models/keep.txt
+!models/bas_action_gru.pt
 
 # OS Generated
 .DS_Store

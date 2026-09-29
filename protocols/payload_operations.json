@@ -1,0 +1,10 @@
+{
+  "name": "Payload Operations & Specimen Retrieval",
+  "steps": [
+    {"id": 0, "action": "open_payload", "label": "Open payload bay", "target_object": "sample_chamber"},
+    {"id": 1, "action": "retrieve_object", "label": "Retrieve sample cartridge", "target_object": "cartridge"},
+    {"id": 2, "action": "inspect_proxy", "label": "Inspect specimen (Proxy)", "target_object": "sensor_probe"},
+    {"id": 3, "action": "return_object", "label": "Return sample cartridge", "target_object": "chamber_seal"},
+    {"id": 4, "action": "close_payload", "label": "Close & seal payload bay", "target_object": "agitator_switch"}
+  ]
+}

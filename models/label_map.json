@@ -1,0 +1,44 @@
+{
+  "classes": [
+    "open_payload",
+    "retrieve_object",
+    "inspect_proxy",
+    "return_object",
+    "close_payload"
+  ],
+  "label_to_idx": {
+    "open_payload": 0,
+    "retrieve_object": 1,
+    "inspect_proxy": 2,
+    "return_object": 3,
+    "close_payload": 4
+  },
+  "idx_to_label": {
+    "0": "open_payload",
+    "1": "retrieve_object",
+    "2": "inspect_proxy",
+    "3": "return_object",
+    "4": "close_payload"
+  },
+  "source_templates": {
+    "open_payload": [
+      "Opening something",
+      "Uncovering something"
+    ],
+    "retrieve_object": [
+      "Taking something out of something",
+      "Taking something from somewhere",
+      "Pulling something out of something"
+    ],
+    "inspect_proxy": [
+      "Holding something"
+    ],
+    "return_object": [
+      "Putting something into something"
+    ],
+    "close_payload": [
+      "Closing something"
+    ]
+  },
+  "note": "inspect_proxy is a proxy based on SSV2 'Holding something' and must be validated by FSM."
+}
